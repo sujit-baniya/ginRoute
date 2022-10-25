@@ -11,7 +11,7 @@ import (
 	contracthttp "github.com/sujit-baniya/framework/contracts/http"
 )
 
-type GinConfig struct {
+type Config struct {
 	Mode        string `json:"mode"`
 	ViewsLayout string `json:"views_layout"`
 	Extension   string `json:"extension"`
@@ -19,58 +19,58 @@ type GinConfig struct {
 	View        *view.Engine
 }
 
-type GinContext struct {
+type Context struct {
 	instance *gin.Context
-	config   GinConfig
+	config   Config
 }
 
-func NewGinContext(ctx *gin.Context, config GinConfig) contracthttp.Context {
-	ct := &GinContext{instance: ctx, config: config}
+func NewContext(ctx *gin.Context, config Config) contracthttp.Context {
+	ct := &Context{instance: ctx, config: config}
 	return ct
 }
 
-func (c *GinContext) Origin() *http.Request {
+func (c *Context) Origin() *http.Request {
 	return c.instance.Request
 }
 
-func (c *GinContext) String(code int, format string, values ...any) error {
+func (c *Context) String(code int, format string, values ...any) error {
 	c.instance.String(code, format, values...)
 	return nil
 }
 
-func (c *GinContext) Json(code int, obj any) error {
+func (c *Context) Json(code int, obj any) error {
 	c.instance.JSON(code, obj)
 	return nil
 }
 
-func (c *GinContext) Render(name string, bind any, layouts ...string) error {
+func (c *Context) Render(name string, bind any, layouts ...string) error {
 	return c.config.View.Render(c.instance.Writer, name, bind, layouts...)
 }
 
-func (c *GinContext) SendFile(filepath string, compress ...bool) error {
+func (c *Context) SendFile(filepath string, compress ...bool) error {
 	c.instance.File(filepath)
 	return nil
 }
 
-func (c *GinContext) Download(filepath, filename string) error {
+func (c *Context) Download(filepath, filename string) error {
 	c.instance.FileAttachment(filepath, filename)
 	return nil
 }
 
-func (c *GinContext) SetHeader(key, value string) contracthttp.Context {
+func (c *Context) SetHeader(key, value string) contracthttp.Context {
 	c.instance.Header(key, value)
 	return c
 }
 
-func (c *GinContext) StatusCode() int {
+func (c *Context) StatusCode() int {
 	return c.instance.Writer.Status()
 }
 
-func (c *GinContext) Vary(field string, values ...string) {
+func (c *Context) Vary(field string, values ...string) {
 	c.Append(field)
 }
 
-func (c *GinContext) Append(field string, values ...string) {
+func (c *Context) Append(field string, values ...string) {
 	if len(values) == 0 {
 		return
 	}
@@ -89,43 +89,43 @@ func (c *GinContext) Append(field string, values ...string) {
 	}
 }
 
-func (c *GinContext) WithValue(key string, value any) {
+func (c *Context) WithValue(key string, value any) {
 	c.instance.Set(key, value)
 }
 
-func (c *GinContext) Deadline() (deadline time.Time, ok bool) {
+func (c *Context) Deadline() (deadline time.Time, ok bool) {
 	return c.instance.Deadline()
 }
 
-func (c *GinContext) Done() <-chan struct{} {
+func (c *Context) Done() <-chan struct{} {
 	return c.instance.Done()
 }
 
-func (c *GinContext) Err() error {
+func (c *Context) Err() error {
 	return c.instance.Err()
 }
 
-func (c *GinContext) Value(key any) any {
+func (c *Context) Value(key any) any {
 	return c.instance.Value(key)
 }
 
-func (c *GinContext) Params(key string) string {
+func (c *Context) Params(key string) string {
 	return c.instance.Param(key)
 }
 
-func (c *GinContext) Query(key, defaultValue string) string {
+func (c *Context) Query(key, defaultValue string) string {
 	return c.instance.DefaultQuery(key, defaultValue)
 }
 
-func (c *GinContext) Form(key, defaultValue string) string {
+func (c *Context) Form(key, defaultValue string) string {
 	return c.instance.DefaultPostForm(key, defaultValue)
 }
 
-func (c *GinContext) Bind(obj any) error {
+func (c *Context) Bind(obj any) error {
 	return c.instance.Bind(obj)
 }
 
-func (c *GinContext) SaveFile(name string, dst string) error {
+func (c *Context) SaveFile(name string, dst string) error {
 	file, err := c.File(name)
 	if err != nil {
 		return err
@@ -133,11 +133,11 @@ func (c *GinContext) SaveFile(name string, dst string) error {
 	return c.instance.SaveUploadedFile(file, dst)
 }
 
-func (c *GinContext) File(name string) (*multipart.FileHeader, error) {
+func (c *Context) File(name string) (*multipart.FileHeader, error) {
 	return c.instance.FormFile(name)
 }
 
-func (c *GinContext) Header(key, defaultValue string) string {
+func (c *Context) Header(key, defaultValue string) string {
 	header := c.instance.GetHeader(key)
 	if header != "" {
 		return header
@@ -146,19 +146,19 @@ func (c *GinContext) Header(key, defaultValue string) string {
 	return defaultValue
 }
 
-func (c *GinContext) Headers() http.Header {
+func (c *Context) Headers() http.Header {
 	return c.instance.Request.Header
 }
 
-func (c *GinContext) Method() string {
+func (c *Context) Method() string {
 	return c.instance.Request.Method
 }
 
-func (c *GinContext) Url() string {
+func (c *Context) Url() string {
 	return c.instance.Request.RequestURI
 }
 
-func (c *GinContext) FullUrl() string {
+func (c *Context) FullUrl() string {
 	prefix := "https://"
 	if c.instance.Request.TLS == nil {
 		prefix = "http://"
@@ -171,21 +171,21 @@ func (c *GinContext) FullUrl() string {
 	return prefix + c.instance.Request.Host + c.instance.Request.RequestURI
 }
 
-func (c *GinContext) AbortWithStatus(code int) {
+func (c *Context) AbortWithStatus(code int) {
 	c.instance.AbortWithStatus(code)
 }
 
-func (c *GinContext) Next() error {
+func (c *Context) Next() error {
 	c.instance.Next()
 	return nil
 }
 
-func (c *GinContext) Cookies(key string, defaultValue ...string) string {
+func (c *Context) Cookies(key string, defaultValue ...string) string {
 	str, _ := c.instance.Cookie(key)
 	return str
 }
 
-func (c *GinContext) Cookie(co *contracthttp.Cookie) {
+func (c *Context) Cookie(co *contracthttp.Cookie) {
 	switch co.SameSite {
 	case "Lax":
 		c.instance.SetSameSite(http.SameSiteLaxMode)
@@ -202,21 +202,21 @@ func (c *GinContext) Cookie(co *contracthttp.Cookie) {
 	c.instance.SetCookie(co.Name, co.Value, co.MaxAge, co.Path, co.Domain, co.Secure, co.HTTPOnly)
 }
 
-func (c *GinContext) Path() string {
+func (c *Context) Path() string {
 	return c.instance.Request.URL.Path
 }
 
-func (c *GinContext) EngineContext() any {
+func (c *Context) EngineContext() any {
 	return c.instance
 }
 
-func (c *GinContext) Secure() bool {
+func (c *Context) Secure() bool {
 	if c.instance.Request.Proto == "https" {
 		return true
 	}
 	return false
 }
 
-func (c *GinContext) Ip() string {
+func (c *Context) Ip() string {
 	return c.instance.ClientIP()
 }

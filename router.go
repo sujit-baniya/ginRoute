@@ -16,17 +16,16 @@ import (
 	"github.com/sujit-baniya/framework/contracts/route"
 	"github.com/sujit-baniya/framework/facades"
 	"github.com/sujit-baniya/framework/foundation"
-	frameworkhttp "github.com/sujit-baniya/framework/http"
 )
 
 type Gin struct {
 	route.Route
 	instance *gin.Engine
-	config   frameworkhttp.GinConfig
+	config   Config
 }
 
-func NewGin(cfg ...frameworkhttp.GinConfig) route.Engine {
-	var config frameworkhttp.GinConfig
+func New(cfg ...Config) route.Engine {
+	var config Config
 	if len(cfg) > 0 {
 		config = cfg[0]
 	}
@@ -75,11 +74,11 @@ type GinGroup struct {
 	prefix            string
 	middlewares       []httpcontract.HandlerFunc
 	globalMiddlewares []httpcontract.HandlerFunc
-	config            frameworkhttp.GinConfig
+	config            Config
 	view              *view.Engine
 }
 
-func NewGinGroup(instance gin.IRouter, prefix string, originMiddlewares []httpcontract.HandlerFunc, globalMiddlewares []httpcontract.HandlerFunc, config frameworkhttp.GinConfig) route.Route {
+func NewGinGroup(instance gin.IRouter, prefix string, originMiddlewares []httpcontract.HandlerFunc, globalMiddlewares []httpcontract.HandlerFunc, config Config) route.Route {
 	return &GinGroup{
 		instance:          instance,
 		originPrefix:      prefix,
@@ -209,7 +208,7 @@ func pathToGinPath(relativePath string) string {
 	return bracketToColon(path.Clean(relativePath))
 }
 
-func middlewaresToGinHandlers(middlewares []httpcontract.HandlerFunc, config frameworkhttp.GinConfig) []gin.HandlerFunc {
+func middlewaresToGinHandlers(middlewares []httpcontract.HandlerFunc, config Config) []gin.HandlerFunc {
 	var ginHandlers []gin.HandlerFunc
 	for _, item := range middlewares {
 		ginHandlers = append(ginHandlers, middlewareToGinHandler(item, config))
@@ -218,15 +217,15 @@ func middlewaresToGinHandlers(middlewares []httpcontract.HandlerFunc, config fra
 	return ginHandlers
 }
 
-func handlerToGinHandler(handler httpcontract.HandlerFunc, config frameworkhttp.GinConfig) gin.HandlerFunc {
+func handlerToGinHandler(handler httpcontract.HandlerFunc, config Config) gin.HandlerFunc {
 	return func(ginCtx *gin.Context) {
-		handler(frameworkhttp.NewGinContext(ginCtx, config))
+		handler(NewContext(ginCtx, config))
 	}
 }
 
-func middlewareToGinHandler(handler httpcontract.HandlerFunc, config frameworkhttp.GinConfig) gin.HandlerFunc {
+func middlewareToGinHandler(handler httpcontract.HandlerFunc, config Config) gin.HandlerFunc {
 	return func(ginCtx *gin.Context) {
-		handler(frameworkhttp.NewGinContext(ginCtx, config))
+		handler(NewContext(ginCtx, config))
 	}
 }
 
