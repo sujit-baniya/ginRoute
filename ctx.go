@@ -33,13 +33,13 @@ func (c *Context) Origin() *http.Request {
 	return c.instance.Request
 }
 
-func (c *Context) String(code int, format string, values ...any) error {
-	c.instance.String(code, format, values...)
+func (c *Context) String(format string, values ...any) error {
+	c.instance.String(c.StatusCode(), format, values...)
 	return nil
 }
 
-func (c *Context) Json(code int, obj any) error {
-	c.instance.JSON(code, obj)
+func (c *Context) Json(obj any) error {
+	c.instance.JSON(c.StatusCode(), obj)
 	return nil
 }
 
@@ -64,6 +64,11 @@ func (c *Context) SetHeader(key, value string) contracthttp.Context {
 
 func (c *Context) StatusCode() int {
 	return c.instance.Writer.Status()
+}
+
+func (c *Context) Status(status int) contracthttp.Context {
+	c.instance.Status(status)
+	return c
 }
 
 func (c *Context) Vary(field string, values ...string) {
