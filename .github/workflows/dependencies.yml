@@ -1,3 +1,8 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches:    
+      - master
 jobs:
   auto-update:
     runs-on: ubuntu-latest
