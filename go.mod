@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/gookit/color v1.5.2
-	github.com/sujit-baniya/framework v1.0.14
+	github.com/sujit-baniya/framework v1.0.15
 )
 
 require (
