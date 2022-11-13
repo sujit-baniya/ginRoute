@@ -1,6 +1,7 @@
 package ginRoute
 
 import (
+	"context"
 	"github.com/sujit-baniya/framework/view"
 	"mime/multipart"
 	"net/http"
@@ -27,6 +28,15 @@ type Context struct {
 func NewContext(ctx *gin.Context, config Config) contracthttp.Context {
 	ct := &Context{instance: ctx, config: config}
 	return ct
+}
+
+func (c *Context) Context() context.Context {
+	ctx := context.Background()
+	for key, value := range c.instance.Keys {
+		ctx = context.WithValue(ctx, key, value)
+	}
+
+	return ctx
 }
 
 func (c *Context) Origin() *http.Request {
